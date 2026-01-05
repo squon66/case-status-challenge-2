@@ -1,8 +1,8 @@
-import ErrorMessage from "@/components/ui/ErrorMessage";
+import { DismissableAlert } from "@/components/DismissableAlert";
 import LoadingMessage from "@/components/ui/LoadingMessage";
 
 export function ClientListError({ error }: { error: Error }) {
-  return <ErrorMessage>Error loading clients: {error.message}</ErrorMessage>;
+    return <DismissableAlert type="error" message={`Error loading clients: ${error.message}`} />;
 }
 
 export function ClientListLoading() {

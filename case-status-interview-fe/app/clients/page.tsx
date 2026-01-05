@@ -1,10 +1,10 @@
-import ClientForm, { ClientsResponse } from "@/features/clients/components/ClientForm";
+import ClientForm from "@/features/clients/components/ClientForm";
 import ClientListContainer from "@/features/clients/components/ClientListContainer";
 import { ClientsPageHeader } from "@/features/clients/components/ClientListLoading";
+import { ClientsResponse } from "@/features/clients/hooks/useCreateClient";
 import { API_BASE_URL } from "@/lib/consts";
 
-
-async function getClients(): Promise<ClientsResponse> {
+async function getClientsFromServer(): Promise<ClientsResponse> {
   const res = await fetch(`${API_BASE_URL}/clients`, {
     cache: "no-store",
   });
@@ -17,9 +17,16 @@ async function getClients(): Promise<ClientsResponse> {
 }
 
 export default async function ClientsPage() {
-  console.log('Rendering ClientsPage');
+  let clientData: ClientsResponse;
 
-  const clientData = await getClients();
+  try {
+    // Fetch clients data on the server side initially
+    clientData = await getClientsFromServer();
+  } catch (error) {
+    console.error('Failed to fetch initial client data:', error);
+    // Provide fallback empty data - TanStack Query will handle retries
+    clientData = { clients: [] };
+  }
 
   return (
     <div className="flex flex-col w-full space-y-8">

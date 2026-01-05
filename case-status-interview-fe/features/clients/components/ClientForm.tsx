@@ -2,58 +2,18 @@
 
 import { clientFormSchema, ClientFormValues } from "@/features/clients/schema";
 import { useForm } from "react-hook-form";
-import { Client } from "@/lib/definitions";
-import { patchClient } from "@/features/clients/services";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { TextField } from "@/components/forms/TextField";
 import DateField from "@/components/forms/DateField";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-
-export type ClientsResponse = {
-  clients: Client[];
-};
+import { ClientListError } from "@/features/clients/components/ClientListLoading";
+import { useCreateClient } from "@/features/clients/hooks/useCreateClient";
 
 export default function ClientForm() {
   const form = useForm<ClientFormValues>({
     resolver: zodResolver(clientFormSchema),
   });
 
-  const queryClient = useQueryClient();
-
-  const mutation = useMutation({
-    mutationFn: patchClient,
-    onMutate: async (newClient: ClientFormValues) => {
-      await queryClient.cancelQueries({ queryKey: ["clients"] });
-
-      const previousClients = queryClient.getQueryData<ClientsResponse>(["clients"]);
-      const tempClient: Client = {
-        id: Date.now(), // Temporary ID
-        firm_id: 1,
-        first_name: newClient.first_name,
-        last_name: newClient.last_name,
-        email: newClient.email,
-        cell_phone: newClient.cell_phone,
-        integration_id: newClient.integration_id,
-        birth_date: newClient.birth_date ?? "",
-        ssn: "",
-      };
-
-      // Optimistically update the clients list
-      queryClient.setQueryData<ClientsResponse>(["clients"], (old = { clients: [] }) => ({
-        clients: [...old.clients, tempClient],
-      }));
-
-      return { previousClients };
-    },
-    onError: (_err, _newClient, context) => {
-      if (context?.previousClients) {
-        queryClient.setQueryData(["clients"], context.previousClients);
-      }
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["clients"] });
-    },
-  });
+  const mutation = useCreateClient();
 
   const onSubmit = (data: ClientFormValues) => {
     mutation.mutate(data);
@@ -61,9 +21,8 @@ export default function ClientForm() {
   };
 
   return (
-    <form
-      onSubmit={form.handleSubmit(onSubmit)}
-    >
+    <form onSubmit={form.handleSubmit(onSubmit)}>
+        {mutation.isError && (<ClientListError error={mutation.error as Error} />)}
         <TextField
             label="First Name"
             registration={form.register("first_name")}
@@ -86,6 +45,7 @@ export default function ClientForm() {
         />
         <TextField
             label="Cell Phone"
+            placeholder="5555555555"
             registration={form.register("cell_phone")}
             error={form.formState.errors.cell_phone}
             required
@@ -101,11 +61,6 @@ export default function ClientForm() {
             registration={form.register("birth_date")}
             error={form.formState.errors.birth_date}
         />
-        {mutation.isError && (
-          <p className="text-red-600 text-sm">
-            {(mutation.error as Error).message}
-          </p>
-        )}
 
         {mutation.isSuccess && (
         <p className="text-green-600 text-sm">

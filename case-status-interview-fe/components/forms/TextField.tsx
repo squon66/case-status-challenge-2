@@ -13,11 +13,11 @@ type TextFieldProps = {
     placeholder?: string;
 };
       
-export function TextField({ label, error, registration, type="text", required }: TextFieldProps) {
+export function TextField({ label, error, registration, type="text", required, placeholder }: TextFieldProps) {
     return (
         <div className={clsx(error ? "mb-1" : "mb-6")}>
             <InputLabel required={required}>{label}</InputLabel>
-            <TextInput registration={registration} type={type} />
+            <TextInput registration={registration} type={type} placeholder={placeholder} />
         
         {error && <p className="text-red-500 text-sm">{error.message}</p>}
         </div>

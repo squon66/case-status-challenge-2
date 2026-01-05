@@ -1,7 +1,7 @@
 
 "use client";
 
-import { ClientRow } from "@/features/clients/components/Client";
+import React from "react";
 import { Client } from "@/lib/definitions";
 
 function ClientGridHeader({children}: {children: React.ReactNode}) {
@@ -20,19 +20,9 @@ export function ClientList({ clients, isRefetching }: { clients: Client[], isRef
       )}
       {clients.length > 0 ? (
         <div className="w-full">
-          {/* Combined Header and Data Rows */}
           <div className="grid gap-px bg-gray-300 border border-gray-300" style={{gridTemplateColumns: 'auto 1fr 1fr 1fr 1fr'}}>
-            {/* Header Row */}
-            <ClientGridHeader>ID</ClientGridHeader>
-            <ClientGridHeader>Name</ClientGridHeader>
-            <ClientGridHeader>Email</ClientGridHeader>
-            <ClientGridHeader>Cell Phone</ClientGridHeader>
-            <ClientGridHeader>Integration ID</ClientGridHeader>
-            
-            {/* Data Rows */}
-            {clients.map((client) => (
-              <ClientRow key={client.id} client={client} />
-            ))}
+            <ColumnNames />
+            <ClientRows clients={clients} />
           </div>
         </div>
       ) : (
@@ -41,5 +31,42 @@ export function ClientList({ clients, isRefetching }: { clients: Client[], isRef
         </div>
       )}
     </div>
+  );
+}
+
+function ClientDataCell({ children }: { children: React.ReactNode }) {
+  return <div className="bg-white px-4 py-3 text-sm hover:bg-gray-50">{children}</div>;
+}
+
+function ClientRow({ client }: { client: Client }) {
+  return (
+    <React.Fragment key={client.id}>
+      <ClientDataCell>{client.id}</ClientDataCell>
+      <ClientDataCell>{`${client.first_name} ${client.last_name}`}</ClientDataCell>
+      <ClientDataCell>{client.email}</ClientDataCell>
+      <ClientDataCell>{client.cell_phone}</ClientDataCell>
+      <ClientDataCell>{client.integration_id}</ClientDataCell>
+    </React.Fragment>
+  );
+} 
+
+function ColumnNames() {
+  const columnNames = ['ID', 'Name', 'Email', 'Cell Phone', 'Integration ID'];
+  return (
+    <>
+      {columnNames.map((name) => (
+        <ClientGridHeader key={name}>{name}</ClientGridHeader>
+      ))}
+    </>
+  );
+}
+
+function ClientRows({ clients }: { clients: Client[] }) {
+  return (
+    <>
+      {clients.map((client) => (
+        <ClientRow key={client.id} client={client} />
+      ))}
+    </>
   );
 }
