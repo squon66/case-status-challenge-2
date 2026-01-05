@@ -36,12 +36,15 @@ export function useCreateClient() {
       return { previousClients };
     },
     onError: (_err, _newClient, context) => {
+      // reset to original data on error
       if (context?.previousClients) {
         queryClient.setQueryData(["clients"], context.previousClients);
       }
     },
-    // onSuccess logic was intended to prevent reload flashes.  But it was dependent on response returning
-    // client data which it is not. 
+    /* 
+      // onSuccess logic was intended to prevent reload flashes.  But it was dependent on response returning
+      // client data which it is not. 
+    */
 
     // onSuccess: (response: { client: Client }, _variables, context) => {
     //   // Update cache with the real client data from server

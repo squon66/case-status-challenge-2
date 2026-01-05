@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { ClientsResponse } from '@/features/clients/components/ClientForm';
+import { ClientsResponse } from '@/features/clients/hooks/useCreateClient';
 import { fetchClients } from '@/features/clients/services';
 
 /**

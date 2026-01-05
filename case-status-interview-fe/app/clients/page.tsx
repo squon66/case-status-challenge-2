@@ -4,6 +4,9 @@ import { ClientsPageHeader } from "@/features/clients/components/ClientListLoadi
 import { ClientsResponse } from "@/features/clients/hooks/useCreateClient";
 import { API_BASE_URL } from "@/lib/consts";
 
+/**
+ * Similar to fetchClients in services.ts but tailored for server-side fetching in a page component
+ */
 async function getClientsFromServer(): Promise<ClientsResponse> {
   const res = await fetch(`${API_BASE_URL}/clients`, {
     cache: "no-store",
@@ -35,6 +38,7 @@ export default async function ClientsPage() {
         <ClientsPageHeader>Client List</ClientsPageHeader>
         <ClientListContainer initialClients={clientData} />
       </div>
+
       {/* Client Form Section */}
         <h2 className="mb-6 text-2xl font-semibold text-gray-900">
           Create New Client

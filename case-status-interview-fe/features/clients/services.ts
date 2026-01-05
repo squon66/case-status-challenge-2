@@ -1,4 +1,4 @@
-import { ClientsResponse } from "@/features/clients/components/ClientForm";
+import { ClientsResponse } from "@/features/clients/hooks/useCreateClient";
 import { ClientFormValues } from "@/features/clients/schema";
 import { transformClientsData } from "@/features/clients/util";
 import { API_BASE_URL } from "@/lib/consts";
@@ -17,7 +17,7 @@ export async function fetchClients(): Promise<ClientsResponse> {
  * Update a client in the API
  */
 export async function patchClient(data: ClientFormValues): Promise<Client> {
-  // Client form data and expected API payload differ to transform the data
+  // Client form data and expected API payload differ so transform the data
   const payload = transformClientsData(data);
 
   const res = await fetch(`${API_BASE_URL}/clients`, {

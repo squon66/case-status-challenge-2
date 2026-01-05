@@ -15,6 +15,7 @@ type TextFieldProps = {
       
 export function TextField({ label, error, registration, type="text", required, placeholder }: TextFieldProps) {
     return (
+        // the clsx logic is to manage margin when error is present
         <div className={clsx(error ? "mb-1" : "mb-6")}>
             <InputLabel required={required}>{label}</InputLabel>
             <TextInput registration={registration} type={type} placeholder={placeholder} />
