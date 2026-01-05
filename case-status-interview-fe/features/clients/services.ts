@@ -1,6 +1,7 @@
+import { ClientFormValues } from "@/features/clients/schema";
 import { transformClientsData } from "@/features/clients/util";
 import { API_BASE_URL } from "@/lib/consts";
-import { Client, ClientFormValues } from "@/lib/definitions";
+import { Client } from "@/lib/definitions";
 
 const fakeClient: Client = {
   id: 1,

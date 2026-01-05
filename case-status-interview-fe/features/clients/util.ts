@@ -1,4 +1,4 @@
-import { ClientFormValues } from "@/lib/definitions";
+import { ClientFormValues } from "@/features/clients/schema";
 
 export type ClientRequestData = {
   firm_id: number;
