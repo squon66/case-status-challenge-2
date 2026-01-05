@@ -1,12 +1,6 @@
 import { Client } from "@/lib/definitions";
 import React from "react";
 
-export function ClientsHeader({children}: {children: React.ReactNode}) {
-  return (
-    <h1 className="text-2xl font-bold text-center">{children}</h1>
-  );
-}
-
 function ClientData({ children }: { children: React.ReactNode }) {
   return <div className="bg-white px-4 py-3 text-sm hover:bg-gray-50">{children}</div>;
 }

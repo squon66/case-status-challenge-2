@@ -7,6 +7,7 @@ import { patchClient } from "@/features/clients/services";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { TextField } from "@/components/forms/TextField";
 import DateField from "@/components/forms/DateField";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export type ClientsResponse = {
   clients: Client[];
@@ -17,15 +18,46 @@ export default function ClientForm() {
     resolver: zodResolver(clientFormSchema),
   });
 
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: patchClient,
+    onMutate: async (newClient: ClientFormValues) => {
+      await queryClient.cancelQueries({ queryKey: ["clients"] });
+
+      const previousClients = queryClient.getQueryData<ClientsResponse>(["clients"]);
+      const tempClient: Client = {
+        id: Date.now(), // Temporary ID
+        firm_id: 1,
+        first_name: newClient.first_name,
+        last_name: newClient.last_name,
+        email: newClient.email,
+        cell_phone: newClient.cell_phone,
+        integration_id: newClient.integration_id,
+        birth_date: newClient.birth_date ?? "",
+        ssn: "",
+      };
+
+      // Optimistically update the clients list
+      queryClient.setQueryData<ClientsResponse>(["clients"], (old = { clients: [] }) => ({
+        clients: [...old.clients, tempClient],
+      }));
+
+      return { previousClients };
+    },
+    onError: (_err, _newClient, context) => {
+      if (context?.previousClients) {
+        queryClient.setQueryData(["clients"], context.previousClients);
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["clients"] });
+    },
+  });
 
   const onSubmit = (data: ClientFormValues) => {
-    patchClient(data)
-      .then((updatedClient) => {
-        console.log("Client updated successfully:", updatedClient);
-      })
-      .catch((error) => {
-        console.error("Error updating client:", error);
-      });
+    mutation.mutate(data);
+    form.reset();
   };
 
   return (
@@ -69,13 +101,26 @@ export default function ClientForm() {
             registration={form.register("birth_date")}
             error={form.formState.errors.birth_date}
         />
+        {mutation.isError && (
+          <p className="text-red-600 text-sm">
+            {(mutation.error as Error).message}
+          </p>
+        )}
+
+        {mutation.isSuccess && (
+        <p className="text-green-600 text-sm">
+          Client created successfully!
+        </p>
+      )}
+
       <button
           type="submit"
+          disabled={mutation.isPending}
           className="inline-flex w-full items-center justify-center rounded-md bg-blue-600 px-4 py-2
                      text-white font-medium hover:bg-blue-700 transition
                      disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Create
+          {mutation.isPending ? "Creating..." : "Create"}
       </button>
     </form>
   );

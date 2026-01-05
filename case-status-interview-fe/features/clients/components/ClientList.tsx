@@ -10,10 +10,14 @@ function ClientGridHeader({children}: {children: React.ReactNode}) {
   );
 }
 
-export function ClientList({ clients }: { clients: Client[] }) {
+export function ClientList({ clients, isRefetching }: { clients: Client[], isRefetching: boolean }) {
   return (
     <div className="flex flex-col w-full relative">
-      
+      {isRefetching && (
+        <div className="absolute top-2 right-2 text-sm text-blue-500 z-10">
+          Refreshing...
+        </div>
+      )}
       {clients.length > 0 ? (
         <div className="w-full">
           {/* Combined Header and Data Rows */}

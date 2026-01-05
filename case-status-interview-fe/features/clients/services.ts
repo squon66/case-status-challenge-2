@@ -1,3 +1,4 @@
+import { ClientsResponse } from "@/features/clients/components/ClientForm";
 import { ClientFormValues } from "@/features/clients/schema";
 import { transformClientsData } from "@/features/clients/util";
 import { API_BASE_URL } from "@/lib/consts";
@@ -14,6 +15,15 @@ const fakeClient: Client = {
   integration_id: "integration-234",
   ssn: "123-45-6789",
 };
+
+/**
+ * Fetch all clients from the API
+ */
+export async function fetchClients(): Promise<ClientsResponse> {
+  const res = await fetch(`${API_BASE_URL}/clients`, { cache: "no-store" });
+  if (!res.ok) throw new Error("Failed to fetch clients");
+  return res.json();
+}
 
 /**
  * Update a client in the API
@@ -40,5 +50,5 @@ export async function patchClient(data: ClientFormValues): Promise<Client> {
     throw new Error(response.errors || "Failed to update client");
   }
 
-  return response; // API returns { status, result, client }
+  return response.result; // API returns { status, result, client }
 }

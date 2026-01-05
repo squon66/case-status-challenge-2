@@ -1,6 +1,6 @@
-import { ClientsHeader } from "@/features/clients/components/Client";
 import ClientForm, { ClientsResponse } from "@/features/clients/components/ClientForm";
-import { ClientList } from "@/features/clients/components/ClientList";
+import ClientListContainer from "@/features/clients/components/ClientListContainer";
+import { ClientsPageHeader } from "@/features/clients/components/ClientListLoading";
 import { API_BASE_URL } from "@/lib/consts";
 
 
@@ -20,14 +20,13 @@ export default async function ClientsPage() {
   console.log('Rendering ClientsPage');
 
   const clientData = await getClients();
-  const clients = clientData.clients;
 
   return (
     <div className="flex flex-col w-full space-y-8">
       {/* Client List Section */}
       <div className="flex flex-col">
-        <ClientsHeader>Client List</ClientsHeader>
-        <ClientList clients={clients} />
+        <ClientsPageHeader>Client List</ClientsPageHeader>
+        <ClientListContainer initialClients={clientData} />
       </div>
       {/* Client Form Section */}
         <h2 className="mb-6 text-2xl font-semibold text-gray-900">
