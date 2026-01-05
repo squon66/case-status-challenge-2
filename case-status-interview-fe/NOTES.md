@@ -95,6 +95,14 @@
 - Centralized type declarations in dedicated files
 - Better separation between API types and component types
 
+## Best practices
+ - Add accessibility tags/logic
+ - Create unit tests
+
+## More Robust client list table 
+- accommodated different length data
+- perhaps paginate or scroll if list got too long so client form doesn't get pushed down.
+
 
 ## Known Issues
 
